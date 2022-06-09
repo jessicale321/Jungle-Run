@@ -18,6 +18,7 @@ public class SceneMngr : MonoBehaviour
     public void CompleteLevel() {
         Debug.Log("show end level");
         endGameScreenUI.SetActive(true); // enable UI
+        Time.timeScale = 0;
     }
 
     private void OnTriggerEnter(Collider other) {

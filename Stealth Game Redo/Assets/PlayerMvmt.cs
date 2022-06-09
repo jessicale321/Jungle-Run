@@ -10,6 +10,7 @@ public class PlayerMvmt : MonoBehaviour
     Vector3 moveDir;
 
     public float speed = 5f;
+    private float originalStepOffset;
     public float turnSmoothTime = 0.1f; // so player direction does not snap to place
     private float turnSmoothVelocity;
 
@@ -21,7 +22,7 @@ public class PlayerMvmt : MonoBehaviour
 
     void Start()
     {
-        
+        originalStepOffset = playerController.stepOffset;
     }
 
     // Update is called once per frame
@@ -38,16 +39,20 @@ public class PlayerMvmt : MonoBehaviour
         // }
 
         if (playerController.isGrounded) {
+            playerController.stepOffset = originalStepOffset;
             vSpeed = 0;
             //Debug.Log("on the ground");
             if (Input.GetKeyDown(KeyCode.Space)) {
                 vSpeed = jumpSpeed;
             }
         }
+        else {
+            playerController.stepOffset = 0; // fixes jumping against wall glitch
+        }
 
         // apply gravity
         vSpeed -= gravityVal * Time.deltaTime;
-        //direction.y = vSpeed;
+
         Vector3 jumpVector = new Vector3(0, vSpeed, 0);
 
         playerController.Move(jumpVector * speed * Time.deltaTime); // jump even if not WASD moving
