@@ -11,7 +11,12 @@ public class SceneMngr : MonoBehaviour
         endGameScreenUI.SetActive(false);
     }
 
-    public static void reloadLevel() {
+    // public static void reloadLevel() {
+    //     SceneManager.LoadScene(1);
+    // }
+
+    public static IEnumerator reloadLevel() {
+        yield return new WaitForSeconds(3.0f);
         SceneManager.LoadScene(1);
     }
 

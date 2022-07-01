@@ -20,6 +20,9 @@ public class PlayerMvmt : MonoBehaviour
     public float jumpSpeed = 3.5f;
     public float jumpSpeedMoving = 3f;
 
+    [SerializeField] Transform groundCheck;
+    [SerializeField] LayerMask ground;
+
     void Start()
     {
         originalStepOffset = playerController.stepOffset;
@@ -33,16 +36,11 @@ public class PlayerMvmt : MonoBehaviour
 
         Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
 
-        // if (playerController.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
-        //     Debug.Log("jump girl jump");
-        //     direction.y =  jumpSpeed - (gravityVal * Time.deltaTime);
-        // }
-
         if (playerController.isGrounded) {
             playerController.stepOffset = originalStepOffset;
             vSpeed = 0;
             GetComponent<Animator>().SetBool("Grounded", true);
-            //Debug.Log("on the ground");
+            Debug.Log("on the ground");
             if (Input.GetKeyDown(KeyCode.Space)) {
                 vSpeed = jumpSpeed;
                 GetComponent<Animator>().SetTrigger("Jump");
@@ -96,5 +94,9 @@ public class PlayerMvmt : MonoBehaviour
         playerController.Move(direction * Time.deltaTime);
 
         
+    }
+
+    public bool groundTouch() {
+        return Physics.CheckSphere(groundCheck.position, .1f, ground);
     }
 }

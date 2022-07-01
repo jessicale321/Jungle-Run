@@ -10,17 +10,17 @@ public class EnemyAI : MonoBehaviour
     public float chaseRange = 10f;
     public float hitRange = 3f;
     float distanceToTarget = Mathf.Infinity; // begin with player out of range
-    // Start is called before the first frame update
+
     void Start()
     {
         myNavMeshAgent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         distanceToTarget = Vector3.Distance(target.position, transform.position); // distance between player & this enemy
-        Debug.Log("Distance: " + distanceToTarget);
+        //Debug.Log("Distance: " + distanceToTarget);
 
         // chase if player in range
         if (distanceToTarget <= chaseRange) {
