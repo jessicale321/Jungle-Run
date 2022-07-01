@@ -20,47 +20,53 @@ public class PlayerMvmt : MonoBehaviour
     public float jumpSpeed = 3.5f;
     public float jumpSpeedMoving = 3f;
 
-    [SerializeField] Transform groundCheck;
-    [SerializeField] LayerMask ground;
+    [SerializeField] private Animator animator;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask ground;
 
-    void Start()
+    private void Start()
     {
         originalStepOffset = playerController.stepOffset;
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
 
         Vector3 direction = new Vector3(horizontal, 0, vertical).normalized;
 
-        if (playerController.isGrounded) {
+        if (playerController.isGrounded)
+        {
             playerController.stepOffset = originalStepOffset;
             vSpeed = 0;
-            GetComponent<Animator>().SetBool("Grounded", true);
+            animator.SetBool("Grounded", true);
             Debug.Log("on the ground");
-            if (Input.GetKeyDown(KeyCode.Space)) {
+            if (Input.GetKeyDown(KeyCode.Space)) 
+            {
                 vSpeed = jumpSpeed;
-                GetComponent<Animator>().SetTrigger("Jump");
-                GetComponent<Animator>().SetBool("Grounded", false);
+                animator.SetTrigger("Jump");
+                animator.SetBool("Grounded", false);
             }
         }
-        else {
+        else 
+        {
             playerController.stepOffset = 0; // fixes jumping against wall glitch
+            
+            // apply gravity
+            vSpeed -= gravityVal * Time.deltaTime;
         }
-
-        // apply gravity
-        vSpeed -= gravityVal * Time.deltaTime;
+        
 
         Vector3 jumpVector = new Vector3(0, vSpeed, 0);
 
         playerController.Move(jumpVector * speed * Time.deltaTime); // jump even if not WASD moving
 
         Vector2 vectorNoY = new Vector2(direction.x, direction.z);
-        
 
+        //Vector3 projDirection = Vector3.ProjectOnPlane(direction, Vector3.up);
+        
         // WASD movement
         if (vectorNoY.magnitude >= 0.1f) { // not sure why this is necessary, maybe it accounts for controller drift?
 
@@ -78,16 +84,18 @@ public class PlayerMvmt : MonoBehaviour
             moveDir = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
 
             playerController.Move(moveDir.normalized * speed * Time.deltaTime);
-            GetComponent<Animator>().SetBool("MoveForward", true);
+            animator.SetBool("MoveForward", true);
         }
-        else {
-            GetComponent<Animator>().SetBool("MoveForward", false);
+        else 
+        {
+            animator.SetBool("MoveForward", false);
         }
 
 
-        if (playerController.isGrounded && Input.GetKeyDown(KeyCode.Space)) {
+        if (playerController.isGrounded && Input.GetKeyDown(KeyCode.Space)) 
+        {
             direction.y = Mathf.Sqrt(jumpSpeed * 2f * gravityVal);
-            GetComponent<Animator>().SetTrigger("Jump");
+            animator.SetTrigger("Jump");
         }
 
         direction.y -= gravityVal * Time.deltaTime;
@@ -96,7 +104,8 @@ public class PlayerMvmt : MonoBehaviour
         
     }
 
-    public bool groundTouch() {
+    public bool GroundTouch() 
+    {
         return Physics.CheckSphere(groundCheck.position, .1f, ground);
     }
 }

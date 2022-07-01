@@ -27,20 +27,21 @@ public class Enemy_AI : MonoBehaviour
             myNavMeshAgent.SetDestination(target.position);
             GetComponent<Animator>().SetBool("Chase", true);
             
-            if (distanceToTarget <= hitRange) {
-            Debug.Log("Killing player");
-            myNavMeshAgent.isStopped = true;
-            hitPlayer();
+            if (distanceToTarget <= hitRange) 
+            {
+                Debug.Log("Killing player");
+                myNavMeshAgent.isStopped = true;
+                hitPlayer();
             }
         }
-        else {
+        else 
+        {
             GetComponent<Animator>().SetBool("Chase", false);
         }
-
-        
     }
 
-    public void hitPlayer() {
+    public void hitPlayer() 
+    {
         // damage player
         GetComponent<Animator>().SetTrigger("Attack");
         Debug.Log("Killed by enemy");
