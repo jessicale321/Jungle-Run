@@ -25,8 +25,7 @@ public class PlayerMvmt : MonoBehaviour
     //jumping
     private float gravityVal = 9.81f;
     private float vSpeed = 0; // current vertical velocity
-    private float jumpSpeed = 3.5f;
-    private float jumpSpeedMoving = 3f;
+    private float jumpSpeed = 2.5f;
 
     float targetAngle;
     float angle;
@@ -41,50 +40,26 @@ public class PlayerMvmt : MonoBehaviour
     private void Update()
     {
 
+        Move();
+        Jump();
 
+    }
 
+    private void Move()
+    {
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
         faceDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
-
-
-
-        if (TouchingGround())
-        {
-            playerController.stepOffset = originalStepOffset;
-            vSpeed = 0;
-            animator.SetBool("Grounded", true);
-            Debug.Log("on the ground");
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                vSpeed = jumpSpeed;
-                animator.SetTrigger("Jump");
-                animator.SetBool("Grounded", false);
-            }
-        }
-        else // the instant player jumps, they are going down again
-        {
-            Debug.Log("in the air");
-            playerController.stepOffset = 0; // fixes jumping against wall glitch
-            vSpeed -= gravityVal * Time.deltaTime;  // apply gravity
-        }
-
-
-
-        Vector3 jumpVector = new Vector3(0, vSpeed, 0);
-
-        //playerController.Move(jumpVector * speed * Time.deltaTime); // jump even if not WASD moving
-
         Vector2 vectorNoY = new Vector2(faceDirection.x, faceDirection.z);
 
         //Vector3 projDirection = Vector3.ProjectOnPlane(direction, Vector3.up);
-        
+        Debug.Log("vectorNoY: " + vectorNoY.magnitude);
         // WASD movement
-        if (vectorNoY.magnitude >= 0.1f) 
+        if (vectorNoY.magnitude >= 0.1f)
         { // not sure why this is necessary, maybe it accounts for controller drift?
-
+            speed = 3.5f;
 
             // rotate player y-direction to point where they are going
             // Atan2(a, b) -> returns angle (rad) btwn x-axis & vector starting at (0,0) terminating at (a, b)
@@ -95,41 +70,50 @@ public class PlayerMvmt : MonoBehaviour
             angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0, angle, 0);
 
-            // point the right way, and move in the right way
-            moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-            playerController.Move((moveDirection.normalized * speed * Time.deltaTime) + jumpVector);
-            //playerController.Move(moveDirection.normalized * speed * Time.deltaTime);
-            animator.SetBool("MoveForward", true);
+            if (TouchingGround())
+            {
+                animator.SetBool("MoveForward", true);
+            }
+            else
+            {
+                animator.SetBool("MoveForward", false);
+            }
+            
         }
-        else 
+        else
         {
+            speed = 0;
             animator.SetBool("MoveForward", false);
         }
 
-        
-
-        if (TouchingGround() && Input.GetKeyDown(KeyCode.Space))
-        {
-            faceDirection.y = Mathf.Sqrt(jumpSpeed * -2f * gravityVal);
-            animator.SetTrigger("Jump");
-        }
-
-        faceDirection.y -= gravityVal * Time.deltaTime;
-        playerController.Move(faceDirection * Time.deltaTime);
-
-        Debug.Log("direction.y: " + faceDirection.y);
-
-
-
-
+        // point the right way, and move in the right way
+        moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
+        playerController.Move(moveDirection.normalized * (speed * Time.deltaTime) + new Vector3(0, vSpeed, 0) * Time.deltaTime);
     }
 
+    // sets vSpeed based on TouchingGround and if Space pressed
     private void Jump()
     {
         if (TouchingGround())
         {
+            animator.SetBool("Grounded", true);
+            // stop vertical speed dropping infinitely when grounded
+            if (vSpeed < 0.0f)
+            {
+                vSpeed = -2f;
+            }
 
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                vSpeed = Mathf.Sqrt(jumpSpeed * 2f * gravityVal);
+                animator.SetTrigger("Jump");
+            }
         }
+        else
+        {
+            animator.SetBool("Grounded", false);
+        }
+        vSpeed -= gravityVal * Time.deltaTime;
     }
 
     private bool TouchingGround() 
