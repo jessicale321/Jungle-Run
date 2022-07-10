@@ -10,6 +10,8 @@ namespace DefaultNamespace
         private void OnTriggerEnter(Collider other) {
             if (other.gameObject.CompareTag("Player")) {
                 Debug.Log("Player touch spike");
+                PlayerMvmt.playerState = State.isDead;
+                Debug.Log("Dying");
                 StartCoroutine(GameManager.ReloadLevel());
             }
         }

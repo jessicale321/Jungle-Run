@@ -1,10 +1,17 @@
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum State
+{
+    isAlive,
+    isDead,
+}
+
 public class PlayerMvmt : MonoBehaviour
 {
+    public static State playerState;
+
     [SerializeField] private CharacterController playerController;
     [SerializeField] private Transform cam;
     
@@ -34,16 +41,27 @@ public class PlayerMvmt : MonoBehaviour
 
     private void Start()
     {
+        playerState = State.isAlive;
         originalStepOffset = playerController.stepOffset;
     }
 
     private void Update()
     {
+        switch (playerState)
+        {
+            case State.isAlive:
+                Move();
+                Jump();
+                break;
 
-        Move();
-        Jump();
-
+            case State.isDead:
+                Debug.Log("Dead af");
+                animator.SetTrigger("DeathForward");
+                break;
+        }
+        
     }
+
 
     private void Move()
     {
@@ -119,5 +137,10 @@ public class PlayerMvmt : MonoBehaviour
     private bool TouchingGround() 
     {
         return Physics.CheckSphere(groundCheck.position, .05f, ground);
+    }
+
+    public void AnimateDeathForward()
+    {
+        animator.SetTrigger("DeathForward");
     }
 }
