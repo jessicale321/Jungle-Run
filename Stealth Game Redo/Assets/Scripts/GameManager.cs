@@ -42,7 +42,8 @@ namespace DefaultNamespace
 		
 		public static IEnumerator ReloadLevel() 
 		{
-			yield return new WaitForSeconds(3.0f);
+			float restartWaitTime = 2.4f;
+			yield return new WaitForSeconds(restartWaitTime);
 			SceneManager.LoadScene(1);
 		}
 		

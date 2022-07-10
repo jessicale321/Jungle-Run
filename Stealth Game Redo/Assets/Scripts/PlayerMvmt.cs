@@ -23,7 +23,7 @@ public class PlayerMvmt : MonoBehaviour
     private float verticalInput;
     private Vector3 faceDirection;
 
-    private float speed = 5f;
+    [SerializeField] private float speed = 8f;
     private float turnSmoothTime = 0.1f; // so player direction does not snap to place
     private float turnSmoothVelocity;
     private Vector3 moveDirection;
@@ -56,6 +56,7 @@ public class PlayerMvmt : MonoBehaviour
 
             case State.isDead:
                 Debug.Log("Dead af");
+                animator.applyRootMotion = true;
                 animator.SetTrigger("DeathForward");
                 break;
         }
