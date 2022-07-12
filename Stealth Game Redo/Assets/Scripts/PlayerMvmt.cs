@@ -8,9 +8,17 @@ public enum State
     isDead,
 }
 
+public enum CauseOfDeath
+{
+    Spike,
+    Enemy,
+    Default,
+}
+
 public class PlayerMvmt : MonoBehaviour
 {
     public static State playerState;
+    public static CauseOfDeath deathCause;
 
     [SerializeField] private CharacterController playerController;
     [SerializeField] private Transform cam;
@@ -42,6 +50,7 @@ public class PlayerMvmt : MonoBehaviour
     private void Start()
     {
         playerState = State.isAlive;
+        deathCause = CauseOfDeath.Default;
         originalStepOffset = playerController.stepOffset;
     }
 
@@ -55,9 +64,17 @@ public class PlayerMvmt : MonoBehaviour
                 break;
 
             case State.isDead:
-                Debug.Log("Dead af");
                 animator.applyRootMotion = true;
-                animator.SetTrigger("DeathForward");
+
+                switch (deathCause)
+                {
+                    case CauseOfDeath.Spike:
+                        animator.SetTrigger("DeathForward");
+                        break;
+                    case CauseOfDeath.Enemy:
+                        animator.SetTrigger("DeathLaunch");
+                        break;
+                }
                 break;
         }
         
@@ -74,7 +91,7 @@ public class PlayerMvmt : MonoBehaviour
         Vector2 vectorNoY = new Vector2(faceDirection.x, faceDirection.z);
 
         //Vector3 projDirection = Vector3.ProjectOnPlane(direction, Vector3.up);
-        Debug.Log("vectorNoY: " + vectorNoY.magnitude);
+
         // WASD movement
         if (vectorNoY.magnitude >= 0.1f)
         { // not sure why this is necessary, maybe it accounts for controller drift?

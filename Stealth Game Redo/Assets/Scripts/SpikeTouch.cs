@@ -7,11 +7,12 @@ namespace DefaultNamespace
 {
     public class SpikeTouch : MonoBehaviour
     {
-        private void OnTriggerEnter(Collider other) {
-            if (other.gameObject.CompareTag("Player")) {
-                Debug.Log("Player touch spike");
+        private void OnTriggerEnter(Collider other) 
+        {
+            if (other.gameObject.CompareTag("Player")) 
+            {
                 PlayerMvmt.playerState = State.isDead;
-                Debug.Log("Dying");
+                PlayerMvmt.deathCause = CauseOfDeath.Spike;
                 StartCoroutine(GameManager.ReloadLevel());
             }
         }
