@@ -11,6 +11,7 @@ namespace DefaultNamespace
 		public static GameManager instance;
 		
 		public GameObject endGameScreenUI;
+		private static float restartWaitTime = 2.4f;
 
 		private void Awake()
 		{
@@ -42,8 +43,8 @@ namespace DefaultNamespace
 		
 		public static IEnumerator ReloadLevel() 
 		{
-			float restartWaitTime = 2.4f;
 			yield return new WaitForSeconds(restartWaitTime);
+			Debug.Log("Reloading");
 			SceneManager.LoadScene(1);
 		}
 		
