@@ -40,7 +40,7 @@ public class PlayerMvmt : MonoBehaviour
     //jumping
     private float gravityVal = 9.81f;
     private float vSpeed = 0; // current vertical velocity
-    private float jumpSpeed = 2.5f;
+    [SerializeField] private float jumpSpeed = 1.5f;
 
     float targetAngle;
     float angle;
