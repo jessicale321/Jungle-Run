@@ -31,7 +31,7 @@ public class PlayerMvmt : MonoBehaviour
     private float verticalInput;
     private Vector3 faceDirection;
 
-    [SerializeField] private float speed = 8f;
+    [SerializeField] private float speed = 10f;
     private float turnSmoothTime = 0.1f; // so player direction does not snap to place
     private float turnSmoothVelocity;
     private Vector3 moveDirection;
@@ -95,7 +95,7 @@ public class PlayerMvmt : MonoBehaviour
         // WASD movement
         if (vectorNoY.magnitude >= 0.1f)
         { // not sure why this is necessary, maybe it accounts for controller drift?
-            speed = 3.5f;
+            speed = 4f;
 
             // rotate player y-direction to point where they are going
             // Atan2(a, b) -> returns angle (rad) btwn x-axis & vector starting at (0,0) terminating at (a, b)
