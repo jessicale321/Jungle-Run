@@ -6,11 +6,12 @@ namespace DefaultNamespace
 {
     public class EnemyHitBox : MonoBehaviour
     {
-        [SerializeField] private Collider hitBox;
+        //[SerializeField] public CapsuleCollider hitBox;
+        [SerializeField] private GameObject hitBox;
 
         private void Start()
         {
-            hitBox = GetComponent<Collider>();
+            //hitBox = GetComponent<Collider>();
             //hitBox.enabled = false;
         }
 
@@ -18,20 +19,24 @@ namespace DefaultNamespace
         {
             if (other.gameObject.CompareTag("Player"))
             {
+
                 PlayerMvmt.playerState = State.isDead;
                 PlayerMvmt.deathCause = CauseOfDeath.Enemy;
                 StartCoroutine(GameManager.ReloadLevel());
+                //Enemy_AI.enemyState = EnemyState.Idle;
             }
         }
 
         public void Active()
         {
-            hitBox.enabled = true;
+            //hitBox.enabled = true;
+            //hitBox.SetActive(true);
         }
 
         public void Inactive()
         {
-            hitBox.enabled = false;
+            //hitBox.enabled = false;
+            //hitBox.SetActive(false);
         }
     }
 }
