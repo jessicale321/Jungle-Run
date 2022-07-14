@@ -16,7 +16,7 @@ public class Enemy_AI : MonoBehaviour
 
     private NavMeshAgent myNavMeshAgent;
     [SerializeField] private Transform _target;
-    private float chaseRange = 10f;
+    [SerializeField] private float chaseRange;
     private float hitRange = 2f;
     private float distanceToTarget;
     private float hitAnimationTime = 3.4f;
