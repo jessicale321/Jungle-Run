@@ -31,7 +31,7 @@ public class PlayerMvmt : MonoBehaviour
     private float verticalInput;
     private Vector3 faceDirection;
 
-    [SerializeField] private float speed = 10f;
+    [SerializeField] private float maximumSpeed = 10f;
     private float turnSmoothTime = 0.1f; // so player direction does not snap to place
     private float turnSmoothVelocity;
     private Vector3 moveDirection;
@@ -45,6 +45,8 @@ public class PlayerMvmt : MonoBehaviour
     float targetAngle;
     float angle;
 
+    private float currentSpeed = 0f;
+
 
 
     private void Start()
@@ -52,10 +54,17 @@ public class PlayerMvmt : MonoBehaviour
         playerState = State.isAlive;
         deathCause = CauseOfDeath.Default;
         originalStepOffset = playerController.stepOffset;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
         switch (playerState)
         {
             case State.isAlive:
@@ -83,10 +92,10 @@ public class PlayerMvmt : MonoBehaviour
 
     private void Move()
     {
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        verticalInput = Input.GetAxisRaw("Vertical");
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
 
-        faceDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
+        faceDirection = new Vector3(horizontalInput, 0, verticalInput);
 
         //Vector2 vectorNoY = new Vector2(faceDirection.x, faceDirection.z);
 
@@ -95,7 +104,7 @@ public class PlayerMvmt : MonoBehaviour
         // WASD movement
         if (projDirection.magnitude >= 0.1f)
         { // not sure why this is necessary, maybe it accounts for controller drift?
-            speed = 4f;
+            //currentSpeed = maximumSpeed;
 
             // rotate player y-direction to point where they are going
             // Atan2(a, b) -> returns angle (rad) btwn x-axis & vector starting at (0,0) terminating at (a, b)
@@ -118,13 +127,13 @@ public class PlayerMvmt : MonoBehaviour
         }
         else
         {
-            speed = 0;
+            //currentSpeed = 0;
             animator.SetBool("MoveForward", false);
         }
 
         // point the right way, and move in the right way
-        moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward;
-        playerController.Move(moveDirection.normalized * (speed * Time.deltaTime) + new Vector3(0, vSpeed, 0) * Time.deltaTime);
+        moveDirection = Quaternion.Euler(0, targetAngle, 0) * Vector3.forward * projDirection.magnitude;
+        playerController.Move(moveDirection * (maximumSpeed * Time.deltaTime) + new Vector3(0, vSpeed, 0) * Time.deltaTime);
     }
 
     // sets vSpeed based on TouchingGround and if Space pressed
@@ -139,7 +148,7 @@ public class PlayerMvmt : MonoBehaviour
                 vSpeed = -2f;
             }
 
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetButtonDown("Jump"))
             {
                 vSpeed = Mathf.Sqrt(jumpSpeed * 2f * gravityVal);
                 animator.SetTrigger("Jump");
