@@ -88,12 +88,12 @@ public class PlayerMvmt : MonoBehaviour
 
         faceDirection = new Vector3(horizontalInput, 0, verticalInput).normalized;
 
-        Vector2 vectorNoY = new Vector2(faceDirection.x, faceDirection.z);
+        //Vector2 vectorNoY = new Vector2(faceDirection.x, faceDirection.z);
 
-        //Vector3 projDirection = Vector3.ProjectOnPlane(direction, Vector3.up);
+        Vector3 projDirection = Vector3.ProjectOnPlane(faceDirection, Vector3.up);
 
         // WASD movement
-        if (vectorNoY.magnitude >= 0.1f)
+        if (projDirection.magnitude >= 0.1f)
         { // not sure why this is necessary, maybe it accounts for controller drift?
             speed = 4f;
 
