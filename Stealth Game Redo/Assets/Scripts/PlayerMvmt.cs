@@ -52,10 +52,17 @@ public class PlayerMvmt : MonoBehaviour
         playerState = State.isAlive;
         deathCause = CauseOfDeath.Default;
         originalStepOffset = playerController.stepOffset;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+        }
         switch (playerState)
         {
             case State.isAlive:
