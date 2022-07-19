@@ -12,98 +12,46 @@ public enum EnemyState
 
 public class Enemy_AI : MonoBehaviour
 {
-    [SerializeField] private EnemyState currentEnemyState = EnemyState.Idle;
+    public static EnemyState enemyState;
+
+    private NavMeshAgent myNavMeshAgent;
     [SerializeField] private Transform _target;
     [SerializeField] private float chaseRange;
-    
-    private NavMeshAgent myNavMeshAgent;
     private float hitRange = 2f;
     private float distanceToTarget;
     private float hitAnimationTime = 3.4f;
 
     private Animator animator;
    
-    private void Start()
+    void Start()
     {
         myNavMeshAgent = GetComponent<NavMeshAgent>();
         distanceToTarget = Mathf.Infinity; // begin with player out of range
         animator = GetComponent<Animator>();
-        SetState(EnemyState.Idle);
-    }
-    
-    private void Update()
-    {
-        switch (currentEnemyState)
-        {
-            case EnemyState.Idle:
-                UpdateIdleState();
-                break;
-            case EnemyState.Chase:
-                UpdateChaseState();
-                break;
-            case EnemyState.Attack:
-                UpdateAttackState();
-                break;
-        }
+        enemyState = EnemyState.Idle;
     }
 
-    private void UpdateIdleState()
+
+    void Update()
     {
         distanceToTarget = CalculateDistanceToTarget(_target);
+
         if (distanceToTarget <= hitRange)
         {
-            SetState(EnemyState.Attack);
+            enemyState = EnemyState.Attack;
         }
         else if (distanceToTarget > hitRange && distanceToTarget <= chaseRange)
         {
-            SetState(EnemyState.Chase);
+            enemyState = EnemyState.Chase;
         }
-    }
-
-    private void UpdateChaseState()
-    {
-        // Update movement
-        myNavMeshAgent.SetDestination(_target.position);
-        myNavMeshAgent.isStopped = false;
-        animator.SetBool("Chase", true);
-        
-        // Check range
-        distanceToTarget = CalculateDistanceToTarget(_target);
-        if (distanceToTarget <= hitRange)
+        else
         {
-            SetState(EnemyState.Attack);
-        }
-        else if (distanceToTarget > chaseRange)
-        {
-            SetState(EnemyState.Idle);
-        }
-    }
-    
-    private void UpdateAttackState()
-    {
-        // Do nothing?
-    }
-
-    private IEnumerator CoPerformAttack()
-    {
-        animator.SetTrigger("Attack");
-        yield return new WaitForSeconds(hitAnimationTime);
-        SetState(EnemyState.Chase);
-    }
-    
-    
-    private void SetState(EnemyState argNewState)
-    {
-        if (currentEnemyState == argNewState)
-        {
-            // Don't do anything if state is the same.
-            return;
+            enemyState = EnemyState.Idle;
         }
 
-        currentEnemyState = argNewState;
-        
-        // Handle ENTERING new states.
-        switch (currentEnemyState)
+        Debug.Log("Enemy state: " + enemyState);
+
+        switch (enemyState)
         {
             case EnemyState.Idle:
                 myNavMeshAgent.isStopped = true;
@@ -111,6 +59,7 @@ public class Enemy_AI : MonoBehaviour
                 animator.SetBool("Chase", false);
                 break;
             case EnemyState.Chase:
+                myNavMeshAgent.SetDestination(_target.position);
                 myNavMeshAgent.isStopped = false;
                 animator.SetBool("Chase", true);
                 break;
@@ -118,11 +67,62 @@ public class Enemy_AI : MonoBehaviour
                 myNavMeshAgent.isStopped = true;
                 myNavMeshAgent.ResetPath();
                 animator.SetBool("Chase", false);
-                
-                // Perform the attack.
-                StartCoroutine(CoPerformAttack());
+                HitPlayer();
                 break;
         }
+
+
+
+/*        distanceToTarget = Vector3.Distance(target.position, transform.position); // distance between player & this enemy
+
+        Debug.Log("Distance: " + distanceToTarget);*/
+
+        // chase if player in range
+
+        /*        if (distanceToTarget <= hitRange)
+                {
+                    myNavMeshAgent.isStopped = true;
+                    myNavMeshAgent.SetDestination(myNavMeshAgent.destination);
+                    hitPlayer();
+                }
+
+                else if (distanceToTarget <= chaseRange)
+                {
+                    myNavMeshAgent.SetDestination(target.position);
+                    myNavMeshAgent.isStopped = false;
+                    animator.SetBool("Chase", true);
+                }
+                else
+                {
+                    myNavMeshAgent.isStopped = true;
+                    animator.SetBool("Chase", false);
+                }*/
+
+
+/*        if (distanceToTarget <= chaseRange)
+        {
+            myNavMeshAgent.SetDestination(target.position);
+            animator.SetBool("Chase", true);
+            //myNavMeshAgent.isStopped = false;
+
+            if (distanceToTarget <= hitRange)
+            {
+                myNavMeshAgent.isStopped = true;
+                hitPlayer();
+            }
+
+            else
+            {
+                myNavMeshAgent.isStopped = false;
+            }
+        }
+        else
+        {
+            animator.SetBool("Chase", false);
+            myNavMeshAgent.isStopped = true;
+        }*/
+
+
     }
 
     private void HitPlayer() 
