@@ -1,2 +1,2 @@
-# Stealth-Game-Again
-Redo and continuation of Stealth Game because I didn't use github right
+# Jungle Run
+Game I made as a test project to join the production team for WaxHeart
